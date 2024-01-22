@@ -3,15 +3,20 @@ const jwt = require('jsonwebtoken');
 const session = require('express-session')
 const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
+const cookieParser = require('cookie-parser')
 
 const app = express();
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
 app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+    if (jwt.verify(req.cookies.login, '123G'))
+        next()
+    else 
+        return res.json({message:"Unauthorized access"})
 });
  
 const PORT =5000;
